@@ -2,7 +2,7 @@
 Tauri学习
 
 # 创建工程
-
+- 本项目基于 node 18.8.0  ; rust 1.64.0
 - pnpm create tauri-app // 安装  tauri-app
 ```
  1.输入项目名称 test5

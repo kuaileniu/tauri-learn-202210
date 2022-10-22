@@ -19,4 +19,9 @@ Tauri学习
 
  7.src-tauri/target/release/bundle/      //打包出的安装文件位置
 
+ --- 8.  upx --ultra-brute src-tauri/target/release/bundle/macos/test5.app/Contents/macOS/test5           // upx再次压缩,但是压缩后就报 您没有权限来打开应用程序，
+
+ 9. cd 项目根目录 pnpm tauri-dev  // 开发模式启动项目
+ 
+
 ```

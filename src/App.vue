@@ -4,6 +4,7 @@
 import Greet from "./components/Greet.vue";
 import InOut from "./components/InOut.vue";
 import TauriEvent from "./components/TauriEvent.vue";
+import TauriHttp from "./components/TauriHttp.vue";
 </script>
 
 <template>
@@ -42,6 +43,7 @@ import TauriEvent from "./components/TauriEvent.vue";
     <Greet />
     <InOut/>
     <TauriEvent/>
+    <TauriHttp/>
   </div>
 </template>
 

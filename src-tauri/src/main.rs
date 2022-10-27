@@ -37,7 +37,7 @@ fn init_process(window: Window) {
                 },
             )
             .unwrap();
-        thread::sleep(time::Duration::from_secs(1));
+        thread::sleep(time::Duration::from_secs(2));
     });
 }
 

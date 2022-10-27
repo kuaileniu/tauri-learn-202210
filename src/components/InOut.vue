@@ -17,7 +17,7 @@ const argsCommand = async () => {
   const b = 100;
   //   let c = await invoke("args_command", { a: a, b: b });
   let c = await invoke("args_command", { a, b });
-  console.log("Rust 返回的值为: " + c);
+  console.log("Rust 返回的值为: " + c);// Rust 计算结果为：7
   commandMsg.value = c;
 };
 </script>

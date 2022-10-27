@@ -3,6 +3,7 @@
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
 import Greet from "./components/Greet.vue";
 import InOut from "./components/InOut.vue";
+import TauriEvent from "./components/TauriEvent.vue";
 </script>
 
 <template>
@@ -40,6 +41,7 @@ import InOut from "./components/InOut.vue";
 
     <Greet />
     <InOut/>
+    <TauriEvent/>
   </div>
 </template>
 

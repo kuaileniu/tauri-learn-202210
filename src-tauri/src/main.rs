@@ -2,6 +2,14 @@
     all(not(debug_assertions), target_os = "windows"),
     windows_subsystem = "windows"
 )]
+use std::{thread, time};
+use tauri::Window;
+
+#[derive(Clone, serde::Serialize)]
+struct MyPayload {
+    message: String,
+    ptype: i32,
+}
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
@@ -17,9 +25,25 @@ fn args_command(a: f32, b: f32) -> f32 {
     c
 }
 
+#[tauri::command]
+fn init_process(window: Window) {
+    std::thread::spawn(move || loop {
+        window
+            .emit(
+                "event-name-hggfjt",
+                MyPayload {
+                    message: "Tauri is awesome!".into(),
+                    ptype: 8,
+                },
+            )
+            .unwrap();
+        thread::sleep(time::Duration::from_secs(1));
+    });
+}
+
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet, args_command])
+        .invoke_handler(tauri::generate_handler![greet, args_command, init_process])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

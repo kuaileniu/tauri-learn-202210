@@ -2,10 +2,14 @@
 import { ref } from "vue";
 import { fetch } from "@tauri-apps/api/http";
 
+type Respomse = {
+  data: string,
+}
+
 const tianQiData = ref("");
 
 const fetchTianQi = async () => {
-  const response = await fetch(
+  const response: Respomse = await fetch(
     "https://v0.yiketianqi.com/api?unescape=1&version=v91&appid=43656176&appsecret=I42og6Lm&ext=&cityid=&city=",
     {
       method: "GET",

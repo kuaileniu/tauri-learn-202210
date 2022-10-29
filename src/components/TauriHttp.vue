@@ -17,7 +17,7 @@ const fetchTianQi = async () => {
     }
   );
   console.log(response.data);
-  tianQiData.value = response.data; // 如何在 vscode 内 去除红色下划线警示？
+  tianQiData.value = response.data;
 };
 </script>
 <template>

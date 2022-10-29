@@ -17,6 +17,9 @@
                 "scope": [
                     "https://v0.yiketianqi.com/*"
                 ]
+            },
+            "fs": {
+                "scope": ["$RESOURCE/img/*"]
             }
         },
         "bundle": {
@@ -43,7 +46,7 @@
                 "providerShortName": null,
                 "signingIdentity": null
             },
-            "resources": [],
+            "resources": ["./img"],
             "shortDescription": "",
             "targets": "all",
             "windows": {

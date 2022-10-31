@@ -41,9 +41,19 @@ fn init_process(window: Window) {
     });
 }
 
+#[tauri::command]
+fn read_every_text_file(path: std::path::PathBuf) -> String {
+    std::fs::read_to_string(path).unwrap()
+}
+
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet, args_command, init_process])
+        .invoke_handler(tauri::generate_handler![
+            greet,
+            args_command,
+            init_process,
+            read_every_text_file
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

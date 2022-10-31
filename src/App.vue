@@ -7,6 +7,7 @@ import TauriEvent from "./components/TauriEvent.vue";
 import TauriHttp from "./components/TauriHttp.vue";
 import TauriFS from "./components/TauriFS.vue";
 import TauriDialog from "./components/TauriDialog.vue"
+import TauriFSEvery from "./components/TauriFSEvery.vue"
 </script>
 
 <template>
@@ -48,6 +49,7 @@ import TauriDialog from "./components/TauriDialog.vue"
     <TauriHttp/>
     <TauriFS/>
     <TauriDialog/>
+    <TauriFSEvery/>
   </div>
 </template>
 

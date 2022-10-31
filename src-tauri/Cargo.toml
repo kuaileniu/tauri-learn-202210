@@ -19,6 +19,11 @@ serde = { version = "1.0", features = ["derive"] }
 tauri = { version = "1.1", features = ["api-all"] }
 # 本地依赖
 # tauri-plugin-fs-extra = { path = "../../../" }
+# tauri-plugin-fs-extra = { git="https://github.com/tauri-apps/tauri-plugin-fs-extra", branch="renovate/tauri-monorepo" }
+# tauri-plugin-fs-extra = { git="ssh:git@github.com:tauri-apps/tauri-plugin-fs-extra.git", branch="renovate/tauri-monorepo" }
+# tauri-plugin-fs-extra = { git="ssh:git@github.com:tauri-apps/tauri-plugin-fs-extra.git", tag="v1.0.0" }
+# tauri-plugin-fs-extra = { git="ssh:git@github.com:tauri-apps/tauri-plugin-fs-extra.git", rev = "bfabc843ef2" }
+
 
 [features]
 # by default Tauri runs in production mode

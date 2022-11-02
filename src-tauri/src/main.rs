@@ -3,7 +3,9 @@
     windows_subsystem = "windows"
 )]
 use std::{thread, time};
+use tauri::SystemTray;
 use tauri::Window;
+use tauri::{CustomMenuItem, SystemTrayMenu, SystemTrayMenuItem};
 
 #[derive(Clone, serde::Serialize)]
 struct MyPayload {
@@ -47,6 +49,13 @@ fn read_every_text_file(path: std::path::PathBuf) -> String {
 }
 
 fn main() {
+    let quit = CustomMenuItem::new("quit".to_string(), "退出");
+    let hide = CustomMenuItem::new("hide".to_string(), "Hide");
+    let tray_menu = SystemTrayMenu::new()
+        .add_item(quit)
+        .add_native_item(SystemTrayMenuItem::Separator)
+        .add_item(hide);
+    let tray = SystemTray::new().with_menu(tray_menu);
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             greet,
@@ -54,6 +63,7 @@ fn main() {
             init_process,
             read_every_text_file
         ])
+        .system_tray(tray)
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

@@ -1,6 +1,9 @@
 # tauri-learn-202210
 Tauri学习
 
+# 要点记录
+- tauri.conf.json 中的 tauri.windows.x 与 tauri.windows.y 须成对出现方可生效
+
 # 创建工程
 
 - pnpm create tauri-app // 安装  tauri-app

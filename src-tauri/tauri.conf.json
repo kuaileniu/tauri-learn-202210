@@ -72,7 +72,12 @@
             "title": "test5",
             "width": 800,
             "decorations": false,
-            "center": true
-        }]
+            "x": 900,
+            "y": 400
+        }],
+        "systemTray": {
+            "iconPath": "icons/icon.png",
+            "iconAsTemplate": true
+        }
     }
 }

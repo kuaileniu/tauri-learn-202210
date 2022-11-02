@@ -15,19 +15,19 @@ const closeWindow = () => {
  
     <div data-tauri-drag-region class="titlebar">
       <div @click="minWindow" class="titlebar-button" id="titlebar-minimize">
-        <img
-          src="https://api.iconify.design/mdi:window-minimize.svg"
+        <img  
+         src="/mdi_window-minimize.svg"
           alt="minimize"
         />
       </div>
       <div @click="maxWindow" class="titlebar-button" id="titlebar-maximize">
-        <img
-          src="https://api.iconify.design/mdi:window-maximize.svg"
+          <img src="/mdi_window-maximize.svg"
           alt="maximize"
         />
       </div>
       <div @click="closeWindow" class="titlebar-button" id="titlebar-close">
-        <img src="https://api.iconify.design/mdi:close.svg" alt="close" />
+        <img src="/mdi_close.svg" 
+        alt="close" />
       </div>
     </div>
  

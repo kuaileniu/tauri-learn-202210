@@ -9,6 +9,7 @@ import TauriFS from "./components/TauriFS.vue";
 import TauriDialog from "./components/TauriDialog.vue"
 import TauriFSEvery from "./components/TauriFSEvery.vue"
 import WindowCustomization from "./components/WindowCustomization.vue"
+import SelectDir from "./components/SelectDir.vue"
 </script>
 
 <template>
@@ -52,6 +53,7 @@ import WindowCustomization from "./components/WindowCustomization.vue"
     <TauriHttp/>
     <TauriFS/>
     <TauriDialog/>
+    <SelectDir/>
     <TauriFSEvery/>
     <WindowCustomization/>
   </div>

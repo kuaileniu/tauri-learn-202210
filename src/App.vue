@@ -8,9 +8,12 @@ import TauriHttp from "./components/TauriHttp.vue";
 import TauriFS from "./components/TauriFS.vue";
 import TauriDialog from "./components/TauriDialog.vue"
 import TauriFSEvery from "./components/TauriFSEvery.vue"
+import WindowCustomization from "./components/WindowCustomization.vue"
 </script>
 
 <template>
+  <div class="btn-group">
+  <button>最上面的按钮</button>
   <div class="container">
     <h1>Welcome to Tauri!</h1>
 
@@ -50,6 +53,8 @@ import TauriFSEvery from "./components/TauriFSEvery.vue"
     <TauriFS/>
     <TauriDialog/>
     <TauriFSEvery/>
+    <WindowCustomization/>
+  </div>
   </div>
 </template>
 
@@ -60,5 +65,8 @@ import TauriFSEvery from "./components/TauriFSEvery.vue"
 
 .logo.vue:hover {
   filter: drop-shadow(0 0 2em #249b73);
+}
+.btn-group {
+    margin-top: 35px;
 }
 </style>

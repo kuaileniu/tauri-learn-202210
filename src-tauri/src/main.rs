@@ -50,6 +50,16 @@ fn read_every_text_file(path: std::path::PathBuf) -> String {
     std::fs::read_to_string(path).unwrap()
 }
 
+#[tauri::command]
+async fn close_splashscreen(window: tauri::Window) {
+  // Close splashscreen
+  if let Some(splashscreen) = window.get_window("my_splashscreen") {
+    splashscreen.close().unwrap();
+  }
+  // Show main window
+  window.get_window("main").unwrap().show().unwrap();
+}
+
 fn main() {
     let quit = CustomMenuItem::new("quit".to_string(), "退出");
     let hide = CustomMenuItem::new("hide".to_string(), "Hide");
@@ -65,7 +75,8 @@ fn main() {
             greet,
             args_command,
             init_process,
-            read_every_text_file
+            read_every_text_file,
+            close_splashscreen
         ])
         .system_tray(tray)
         .on_system_tray_event(|app, event| match event {

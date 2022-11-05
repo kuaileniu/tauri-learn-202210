@@ -19,11 +19,15 @@
                 ]
             },
             "fs": {
-                "scope": ["$RESOURCE/img/*"]
+                "scope": [
+                    "$RESOURCE/img/*"
+                ]
             },
             "protocol": {
                 "asset": true,
-                "assetScope": ["$RESOURCE/img/*"]
+                "assetScope": [
+                    "$RESOURCE/img/*"
+                ]
             }
         },
         "bundle": {
@@ -50,7 +54,9 @@
                 "providerShortName": null,
                 "signingIdentity": null
             },
-            "resources": ["./img"],
+            "resources": [
+                "./img"
+            ],
             "shortDescription": "",
             "targets": "all",
             "windows": {
@@ -66,15 +72,25 @@
             "active": false
         },
         "windows": [{
-            "fullscreen": false,
-            "height": 600,
-            "resizable": true,
-            "title": "test5",
-            "width": 800,
-            "decorations": false,
-            "x": 900,
-            "y": 400
-        }],
+                "fullscreen": false,
+                "height": 600,
+                "resizable": true,
+                "title": "test5",
+                "width": 800,
+                "decorations": false,
+                "x": 900,
+                "y": 400,
+                "visible": false
+            },
+            {
+                "width": 400,
+                "height": 200,
+                "center": true,
+                "decorations": false,
+                "url": "page/splashscreen.html",
+                "label": "my_splashscreen"
+            }
+        ],
         "systemTray": {
             "iconPath": "icons/icon.png",
             "iconAsTemplate": true

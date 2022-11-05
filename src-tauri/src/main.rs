@@ -92,6 +92,7 @@ fn main() {
             }
             SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
                 "quit" => {
+                    dbg!("阻止系统quit退出");
                     std::process::exit(0);
                 }
                 "hide" => {
@@ -106,6 +107,14 @@ fn main() {
             },
             _ => {}
         })
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .build(tauri::generate_context!())
+        // .run(tauri::generate_context!())
+        .expect("error while running tauri application")
+        .run(|_app_handle, event| match event {
+            tauri::RunEvent::ExitRequested { api, .. } => {
+                dbg!("阻止系统退出");
+                api.prevent_exit();
+            }
+            _ => {}
+        });
 }

@@ -138,12 +138,9 @@ fn main() {
         // .expect("error while running tauri application")
         .build(tauri::generate_context!())
         .expect("error while running tauri application")
-        .run(|_app_handle, event| match event {
-            tauri::RunEvent::ExitRequested { api, .. } => {
-                // dbg!("阻止退出,系统仍在后台运行");
-                println!("界面退出,系统仍在后台运行");
-                api.prevent_exit(); //阻止退出,在后台运行
-            }
-            _ => {}
+        .run(|app, event| if let tauri::RunEvent::ExitRequested { api, .. } = event {
+            // dbg!("阻止退出,系统仍在后台运行");
+            println!("最后一个窗口界面关闭,系统仍在后台运行");
+            api.prevent_exit(); //阻止退出,在后台运行
         });
 }

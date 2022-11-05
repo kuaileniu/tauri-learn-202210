@@ -12,6 +12,7 @@ import TauriDialog from "./components/TauriDialog.vue";
 import TauriFSEvery from "./components/TauriFSEvery.vue";
 import WindowCustomization from "./components/WindowCustomization.vue";
 import SelectDir from "./components/SelectDir.vue";
+import Multiwindow from "./components/Multiwindow.vue";
 
 onMounted(() => {
   // setTimeout(() => {
@@ -67,6 +68,7 @@ onMounted(() => {
       <SelectDir />
       <TauriFSEvery />
       <WindowCustomization />
+      <Multiwindow />
     </div>
   </div>
 </template>

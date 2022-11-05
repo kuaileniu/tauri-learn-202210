@@ -49,15 +49,19 @@ fn init_process(window: Window) {
 fn read_every_text_file(path: std::path::PathBuf) -> String {
     std::fs::read_to_string(path).unwrap()
 }
-
+// 通过前端调用
 #[tauri::command]
 async fn close_splashscreen(window: tauri::Window) {
-  // Close splashscreen
-  if let Some(splashscreen) = window.get_window("my_splashscreen") {
-    splashscreen.close().unwrap();
-  }
-  // Show main window
-  window.get_window("main").unwrap().show().unwrap();
+    println!("front.start.Mock.Initializing...");
+    std::thread::sleep(std::time::Duration::from_secs(7));
+    println!("front.start.Mock.Done initializing.");
+    // Close splashscreen
+    if let Some(splashscreen) = window.get_window("my_splashscreen") {
+        splashscreen.close().unwrap();
+    }
+
+    // Show main window
+    window.get_window("main").unwrap().show().unwrap();
 }
 
 fn main() {
@@ -71,6 +75,18 @@ fn main() {
         .add_item(show);
     let tray = SystemTray::new().with_menu(tray_menu);
     tauri::Builder::default()
+        .setup(|app| { // 后端单方（无需前端发起调用) 关闭开屏界面
+            let splashscreen_window = app.get_window("my_splashscreen").unwrap();
+            let main_window = app.get_window("main").unwrap();
+            tauri::async_runtime::spawn(async move {
+                println!("Mock.Initializing...");
+                std::thread::sleep(std::time::Duration::from_secs(3));
+                println!("Mock.Done initializing.");
+                splashscreen_window.close().unwrap();
+                main_window.show().unwrap();
+            });
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![
             greet,
             args_command,
@@ -120,7 +136,6 @@ fn main() {
         })
         // .run(tauri::generate_context!())
         // .expect("error while running tauri application")
-
         .build(tauri::generate_context!())
         .expect("error while running tauri application")
         .run(|_app_handle, event| match event {

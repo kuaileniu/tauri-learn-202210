@@ -14,10 +14,10 @@ import WindowCustomization from "./components/WindowCustomization.vue";
 import SelectDir from "./components/SelectDir.vue";
 
 onMounted(() => {
-  setTimeout(() => {
-    console.log("关闭开屏界面");
-    invoke("close_splashscreen");
-  }, 3000);
+  // setTimeout(() => {
+  //   console.log("前端关闭开屏界面");
+  //   invoke("close_splashscreen");
+  // }, 3000);
 });
 </script>
 

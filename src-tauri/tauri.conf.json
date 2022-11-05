@@ -91,7 +91,6 @@
                 "label": "my_splashscreen"
             }
         ],
-
         "systemTray": {
             "iconPath": "icons/icon.png",
             "iconAsTemplate": true

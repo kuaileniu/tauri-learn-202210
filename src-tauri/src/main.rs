@@ -107,13 +107,16 @@ fn main() {
             },
             _ => {}
         })
-        .build(tauri::generate_context!())
         // .run(tauri::generate_context!())
+        // .expect("error while running tauri application")
+
+        .build(tauri::generate_context!())
         .expect("error while running tauri application")
-        .run(|_app_handle, event | match event {
+        .run(|_app_handle, event| match event {
             tauri::RunEvent::ExitRequested { api, .. } => {
-                dbg!("阻止退出");
-                api.prevent_exit();
+                // dbg!("阻止退出,系统仍在后台运行");
+                println!("界面退出,系统仍在后台运行");
+                api.prevent_exit(); //阻止退出,在后台运行
             }
             _ => {}
         });

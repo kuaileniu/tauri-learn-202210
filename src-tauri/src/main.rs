@@ -114,19 +114,74 @@ pub fn tray_handler(app: &AppHandle, event: SystemTrayEvent) {
             println!("双击");
         }
         SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
-            "change_ico" => {// 更新托盘图标
-                app
-                .tray_handle()
-                .set_icon(tauri::Icon::Raw(
-                    include_bytes!("../icons/new-icon.png").to_vec()
-                ))
-                .unwrap();
+            "change_ico" => {
+                // 更新托盘图标
+                app.tray_handle()
+                    .set_icon(tauri::Icon::Raw(
+                        include_bytes!("../icons/new-icon.png").to_vec(),
+                    ))
+                    .unwrap();
+            }
+            lang if lang.contains("lang_") => {
+                Lang::new(
+                    app,
+                    id,
+                    vec![
+                        Lang {
+                            name: "切换-English",
+                            id: "lang_english",
+                        },
+                        Lang {
+                            name: "切换-繁体中文",
+                            id: "lang_zh_HK",
+                        },
+                        Lang {
+                            name: "切换-简体中文",
+                            id: "lang_zh_CN",
+                        },
+                    ],
+                );
+            }
+            "hide" => {
+                println!("点击隐藏");
+                let window = app.get_window("main").unwrap();
+                window.hide().unwrap();
+            }
+            "show" => {
+                println!("点击显示");
+                let window = app.get_window("main").unwrap();
+                window.show().unwrap();
+            }
+            "quit" => {
+                println!("点击退出");
+                std::process::exit(0);
             }
             _ => {}
         },
         _ => {
             println!("其它操作");
         }
+    }
+}
+
+struct Lang<'a> {
+    name: &'a str,
+    id: &'a str,
+}
+
+impl Lang<'static> {
+    fn new(app: &AppHandle, id: String, langs: Vec<Lang>) {
+        langs.iter().for_each(|lan| {
+            let handle = app.tray_handle().get_item(lan.id);
+            if lan.id == id {
+                // 设置菜单名称
+                handle.set_title(format!(" {}", lan.name)).unwrap();
+                handle.set_selected(true).unwrap();
+            } else {
+                handle.set_title(lan.name).unwrap();
+                handle.set_selected(false).unwrap();
+            }
+        });
     }
 }
 
@@ -154,45 +209,6 @@ fn main() {
         ])
         .system_tray(menu())
         .on_system_tray_event(tray_handler)
-        // .on_system_tray_event(|app, event| match event {
-        //     SystemTrayEvent::LeftClick {
-        //         position: _,
-        //         size: _,
-        //         ..
-        //     } => {
-        //         println!("system tray received a left click");
-        //     }
-        //     SystemTrayEvent::RightClick {
-        //         position: _,
-        //         size: _,
-        //         ..
-        //     } => {
-        //         println!("system tray received a right click");
-        //     }
-        //     SystemTrayEvent::DoubleClick {
-        //         position: _,
-        //         size: _,
-        //         ..
-        //     } => {
-        //         println!("system tray received a double click");
-        //     }
-        //     SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
-        //         "quit" => {
-        //             dbg!("系统quit退出");
-        //             std::process::exit(0);
-        //         }
-        //         "hide" => {
-        //             let window = app.get_window("main").unwrap();
-        //             window.hide().unwrap();
-        //         }
-        //         "show" => {
-        //             let window = app.get_window("main").unwrap();
-        //             window.show().unwrap();
-        //         }
-        //         _ => {}
-        //     },
-        //     _ => {}
-        // })
         // .run(tauri::generate_context!())
         // .expect("error while running tauri application")
         .build(tauri::generate_context!())

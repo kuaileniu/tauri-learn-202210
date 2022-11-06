@@ -3,11 +3,12 @@
     windows_subsystem = "windows"
 )]
 use std::{thread, time};
+use tauri::AppHandle;
 use tauri::Manager;
 use tauri::SystemTray;
 use tauri::SystemTrayEvent;
 use tauri::Window;
-use tauri::{CustomMenuItem, SystemTrayMenu, SystemTrayMenuItem};
+use tauri::{CustomMenuItem, SystemTrayMenu, SystemTrayMenuItem, SystemTraySubmenu};
 
 #[derive(Clone, serde::Serialize)]
 struct MyPayload {
@@ -64,18 +65,75 @@ async fn close_splashscreen(window: tauri::Window) {
     window.get_window("main").unwrap().show().unwrap();
 }
 
-fn main() {
+// 托盘菜单
+pub fn menu() -> SystemTray {
     let quit = CustomMenuItem::new("quit".to_string(), "退出");
     let hide = CustomMenuItem::new("hide".to_string(), "Hide");
     let show = CustomMenuItem::new("show".to_string(), "Show");
+    let change_ico = CustomMenuItem::new("change_ico".to_string(), "Change Icon");
     let tray_menu = SystemTrayMenu::new()
-        .add_item(quit)
-        .add_native_item(SystemTrayMenuItem::Separator)
+        .add_submenu(SystemTraySubmenu::new(
+            "Language", //
+            SystemTrayMenu::new()
+                .add_item(CustomMenuItem::new("lang_english", "English"))
+                .add_item(CustomMenuItem::new("lang_zh_CN", "简体中文"))
+                .add_item(CustomMenuItem::new("lang_zh_HK", "繁体中文")),
+        ))
+        .add_native_item(SystemTrayMenuItem::Separator) // 分割线
+        .add_item(change_ico)
+        .add_native_item(SystemTrayMenuItem::Separator) // 分割线
         .add_item(hide)
-        .add_item(show);
-    let tray = SystemTray::new().with_menu(tray_menu);
+        .add_item(show)
+        .add_native_item(SystemTrayMenuItem::Separator) // 分割线
+        .add_item(quit);
+    SystemTray::new().with_menu(tray_menu)
+}
+
+// 托盘事件
+pub fn tray_handler(app: &AppHandle, event: SystemTrayEvent) {
+    match event {
+        SystemTrayEvent::LeftClick {
+            position: _,
+            size: _,
+            ..
+        } => {
+            println!("左键点击");
+        }
+        SystemTrayEvent::RightClick {
+            position: _,
+            size: _,
+            ..
+        } => {
+            println!("右键点击");
+        }
+        SystemTrayEvent::DoubleClick {
+            position: _,
+            size: _,
+            ..
+        } => {
+            println!("双击");
+        }
+        SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
+            "change_ico" => {// 更新托盘图标
+                app
+                .tray_handle()
+                .set_icon(tauri::Icon::Raw(
+                    include_bytes!("../icons/new-icon.png").to_vec()
+                ))
+                .unwrap();
+            }
+            _ => {}
+        },
+        _ => {
+            println!("其它操作");
+        }
+    }
+}
+
+fn main() {
     tauri::Builder::default()
-        .setup(|app| { // 后端单方（无需前端发起调用) 关闭开屏界面
+        .setup(|app| {
+            // 后端单方（无需前端发起调用) 关闭开屏界面
             let splashscreen_window = app.get_window("my_splashscreen").unwrap();
             let main_window = app.get_window("main").unwrap();
             tauri::async_runtime::spawn(async move {
@@ -94,53 +152,56 @@ fn main() {
             read_every_text_file,
             close_splashscreen
         ])
-        .system_tray(tray)
-        .on_system_tray_event(|app, event| match event {
-            SystemTrayEvent::LeftClick {
-                position: _,
-                size: _,
-                ..
-            } => {
-                println!("system tray received a left click");
-            }
-            SystemTrayEvent::RightClick {
-                position: _,
-                size: _,
-                ..
-            } => {
-                println!("system tray received a right click");
-            }
-            SystemTrayEvent::DoubleClick {
-                position: _,
-                size: _,
-                ..
-            } => {
-                println!("system tray received a double click");
-            }
-            SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
-                "quit" => {
-                    dbg!("系统quit退出");
-                    std::process::exit(0);
-                }
-                "hide" => {
-                    let window = app.get_window("main").unwrap();
-                    window.hide().unwrap();
-                }
-                "show" => {
-                    let window = app.get_window("main").unwrap();
-                    window.show().unwrap();
-                }
-                _ => {}
-            },
-            _ => {}
-        })
+        .system_tray(menu())
+        .on_system_tray_event(tray_handler)
+        // .on_system_tray_event(|app, event| match event {
+        //     SystemTrayEvent::LeftClick {
+        //         position: _,
+        //         size: _,
+        //         ..
+        //     } => {
+        //         println!("system tray received a left click");
+        //     }
+        //     SystemTrayEvent::RightClick {
+        //         position: _,
+        //         size: _,
+        //         ..
+        //     } => {
+        //         println!("system tray received a right click");
+        //     }
+        //     SystemTrayEvent::DoubleClick {
+        //         position: _,
+        //         size: _,
+        //         ..
+        //     } => {
+        //         println!("system tray received a double click");
+        //     }
+        //     SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
+        //         "quit" => {
+        //             dbg!("系统quit退出");
+        //             std::process::exit(0);
+        //         }
+        //         "hide" => {
+        //             let window = app.get_window("main").unwrap();
+        //             window.hide().unwrap();
+        //         }
+        //         "show" => {
+        //             let window = app.get_window("main").unwrap();
+        //             window.show().unwrap();
+        //         }
+        //         _ => {}
+        //     },
+        //     _ => {}
+        // })
         // .run(tauri::generate_context!())
         // .expect("error while running tauri application")
         .build(tauri::generate_context!())
         .expect("error while running tauri application")
-        .run(|app, event| if let tauri::RunEvent::ExitRequested { api, .. } = event {
-            // dbg!("阻止退出,系统仍在后台运行");
-            println!("最后一个窗口界面关闭,系统仍在后台运行");
-            api.prevent_exit(); //阻止退出,在后台运行
+        .run(|app, event| {
+            if let tauri::RunEvent::ExitRequested { api, .. } = event {
+                // dbg!("阻止退出,系统仍在后台运行");
+                println!("最后一个窗口界面关闭,系统仍在后台运行");
+                api.prevent_exit(); //阻止退出,在后台运行
+            }
         });
 }

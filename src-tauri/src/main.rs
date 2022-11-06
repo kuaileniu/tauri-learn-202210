@@ -120,7 +120,7 @@ pub fn tray_handler(app: &AppHandle, event: SystemTrayEvent) {
                     .set_icon(tauri::Icon::Raw(
                         include_bytes!("../icons/new-icon.png").to_vec(),
                     ))
-                    .unwrap();
+                    .unwrap(); // TODO 此处存在bug，点击后系统随即异常退出
             }
             lang if lang.contains("lang_") => {
                 Lang::new(

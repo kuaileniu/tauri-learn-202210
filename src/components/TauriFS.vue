@@ -16,7 +16,7 @@ const readImg = async () => {
 const readImgTwo = async () => {
   const resourceDirPath = await resourceDir();
   const filePath = await join(resourceDirPath, "img", "avatar.png");
-  const assetUrl = convertFileSrc(filePath);
+  const assetUrl = await convertFileSrc(filePath);
   console.log(
     `resourceDirPath:${resourceDirPath} ,\n filePath:${filePath} \n ,assetUrl:${assetUrl}`
   );

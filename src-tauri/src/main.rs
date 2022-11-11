@@ -114,14 +114,14 @@ pub fn tray_handler(app: &AppHandle, event: SystemTrayEvent) {
             println!("双击");
         }
         SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
-            "change_ico" => {
-                // 更新托盘图标
-                app.tray_handle()
-                    .set_icon(tauri::Icon::Raw(
-                        include_bytes!("../icons/new-icon.png").to_vec(),
-                    ))
-                    .unwrap(); // TODO 此处存在bug，点击后系统随即异常退出
-            }
+            // "change_ico" => {
+            //     // 更新托盘图标
+            //     app.tray_handle()
+            //         .set_icon(tauri::Icon::Raw(
+            //             include_bytes!("../icons/new-icon.png").to_vec(),
+            //         ))
+            //         .unwrap(); // TODO 此处存在bug，点击后系统随即异常退出
+            // }
             lang if lang.contains("lang_") => {
                 Lang::new(
                     app,

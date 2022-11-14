@@ -26,6 +26,10 @@ tauri = { version = "1.1", features = ["api-all", "system-tray", "windows7-compa
 # image-convert = "0.12.1" 这个依赖操作系统携带的模块
 png = "0.17.7"
 glium = "0.32.1"
+image = "0.23.14"
+regex = "1.5.4"
+rustc-serialize = "0.3.24"
+base64 = "0.12.0"
 [features]
 # by default Tauri runs in production mode
 # when `tauri dev` runs it is executed with `cargo run --no-default-features` if `devPath` is an URL

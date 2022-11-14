@@ -33,6 +33,7 @@ const readImgFromMemory = async () => {
   const content = await invoke("read_img_file", {
     path: filePath,
   });
+  imgMemory.value = content
 };
 
 </script>

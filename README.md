@@ -34,3 +34,6 @@ Tauri学习
 
 ## 图片
 - png https://github.com/image-rs/image-png/blob/master/examples/show.rs
+
+
+image_base64_rs https://github.com/sunnyrust/image_base64_rs/blob/main/src/main.rs

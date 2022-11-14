@@ -3,9 +3,10 @@
     windows_subsystem = "windows"
 )]
 use glium::texture::ClientFormat;
+use test5::image_encode_base64;
 use std::fs::{self, File};
 use std::io::Read;
-use std::{path, vec};
+use std::{path, vec, string};
 use std::{thread, time};
 use tauri::AppHandle;
 use tauri::Manager;
@@ -56,7 +57,12 @@ fn read_every_text_file(path: std::path::PathBuf) -> String {
 }
 
 #[tauri::command]
-fn read_img_file(path: &str) {
+fn read_img_file(path: &str)-> String {
+    image_encode_base64(path)
+}
+
+#[tauri::command]
+fn read_img_file444(path: &str) {
     // fn read_img_file(path: &path::PathBuf) {
     // println!("path:--->{}", path);
     use png::ColorType::*;
@@ -65,10 +71,12 @@ fn read_img_file(path: &str) {
     decoder.set_transformations(png::Transformations::normalize_to_color8());
     let mut reader = decoder.read_info().expect("未能成功读取图片信息");
     let mut img_data = vec![0; reader.output_buffer_size()];
-    let info = reader.next_frame(&mut img_data).expect("未能读取frame信息");
+    let info = reader.info();//Info { width: 310, height: 310, bit_depth: Eight, color_type: Rgba, interlaced: false, trns: None, pixel_dims: Some(PixelDimensions { xppu: 2835, yppu: 2835, unit: Meter }), palette: None, gama_chunk: Some(ScaledFloat(45455)), chrm_chunk: None, frame_control: None, animation_control: None, compression: Fast, source_gamma: Some(ScaledFloat(45455)), source_chromaticities: Some(SourceChromaticities { white: (ScaledFloat(31270), ScaledFloat(32900)), red: (ScaledFloat(64000), ScaledFloat(33000)), green: (ScaledFloat(30000), ScaledFloat(60000)), blue: (ScaledFloat(15000), ScaledFloat(6000)) }), srgb: Some(Perceptual), icc_profile: None, uncompressed_latin1_text: [], compressed_latin1_text: [], utf8_text: [] }
+    println!("{:?}", info);
+    let outPutInfo = reader.next_frame(&mut img_data).expect("未能读取frame信息");
 
-    println!("{:?}", info); // OutputInfo { width: 310, height: 310, color_type: Rgba, bit_depth: Eight, line_size: 1240 }
-    let (data, format) = match info.color_type {
+    println!("{:?}", outPutInfo); // OutputInfo { width: 310, height: 310, color_type: Rgba, bit_depth: Eight, line_size: 1240 }
+    let (data, format) = match outPutInfo.color_type {
         Rgb => (
             {
                 println!("00000000000"); //当不引入  use png::ColorType::* 时走这个分支
@@ -78,7 +86,7 @@ fn read_img_file(path: &str) {
         ),
         Rgba => (
             {
-                println!("11111111111");//实际走的这个分支
+                println!("11111111111"); //实际走的这个分支
                 img_data
             },
             ClientFormat::U8U8U8U8,
@@ -113,9 +121,13 @@ fn read_img_file(path: &str) {
     // let buf=f.bytes();
     // // let mut buf = vec![0; 8];
     // // let n = f.read_buf(&mut buf[..]).unwrap();
-    println!("data capacity:{:?},len:{:?} ", data.capacity(),data.len());
-    
 
+    println!("data capacity{:?},len:{:?} ", data.capacity(), data.len());
+    let mut cloneData = data.clone();
+   
+    // cloneData.truncate(1000);
+    // cloneData.trunc(1000);
+ 
 }
 
 // 通过前端调用

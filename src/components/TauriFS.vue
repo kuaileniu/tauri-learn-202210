@@ -16,7 +16,7 @@ const readImg = async () => {
 const readImgTwo = async () => {
   const resourceDirPath = await resourceDir();
   const filePath = await join(resourceDirPath, "img", "avatar.png");
-  const assetUrl = await convertFileSrc(filePath);
+  const assetUrl = await convertFileSrc(filePath, "asset://localhost");
   console.log(
     `resourceDirPath:${resourceDirPath} ,\n filePath:${filePath} \n ,assetUrl:${assetUrl}`
   );
@@ -27,7 +27,7 @@ const readImgTwo = async () => {
 <template>
   <button @click="readImg">读取文件指定路径下的文件(前端TS)</button>
   <button @click="readImgTwo">通过路径直接显示文件（前端TS）</button>
-  <img :src="imgSrc" alt="测试图片img/avatar.png,实验失败" />
+  <img :src="imgSrc" alt="测试图片img/avatar.png" />
   <img src="/avatar.png" class="logo vite" alt="public/avatar.png;public下的文件可被直接引用" />
 </template>
 <style scoped>

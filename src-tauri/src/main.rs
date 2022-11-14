@@ -2,6 +2,10 @@
     all(not(debug_assertions), target_os = "windows"),
     windows_subsystem = "windows"
 )]
+use glium::texture::ClientFormat;
+use std::fs::{self, File};
+use std::io::Read;
+use std::{path, vec};
 use std::{thread, time};
 use tauri::AppHandle;
 use tauri::Manager;
@@ -50,6 +54,70 @@ fn init_process(window: Window) {
 fn read_every_text_file(path: std::path::PathBuf) -> String {
     std::fs::read_to_string(path).unwrap()
 }
+
+#[tauri::command]
+fn read_img_file(path: &str) {
+    // fn read_img_file(path: &path::PathBuf) {
+    // println!("path:--->{}", path);
+    use png::ColorType::*;
+    let f = fs::File::open(path).expect("Something went wrong reading the png file");
+    let mut decoder = png::Decoder::new(f);
+    decoder.set_transformations(png::Transformations::normalize_to_color8());
+    let mut reader = decoder.read_info().expect("未能成功读取图片信息");
+    let mut img_data = vec![0; reader.output_buffer_size()];
+    let info = reader.next_frame(&mut img_data).expect("未能读取frame信息");
+
+    println!("{:?}", info); // OutputInfo { width: 310, height: 310, color_type: Rgba, bit_depth: Eight, line_size: 1240 }
+    let (data, format) = match info.color_type {
+        Rgb => (
+            {
+                println!("00000000000"); //当不引入  use png::ColorType::* 时走这个分支
+                img_data
+            },
+            ClientFormat::U8U8U8,
+        ),
+        Rgba => (
+            {
+                println!("11111111111");//实际走的这个分支
+                img_data
+            },
+            ClientFormat::U8U8U8U8,
+        ),
+        Grayscale => (
+            {
+                let mut vec = Vec::with_capacity(img_data.len() * 3);
+                for g in img_data {
+                    println!("222222222");
+                    vec.extend([g, g, g].iter().cloned())
+                }
+                vec
+            },
+            ClientFormat::U8U8U8,
+        ),
+        GrayscaleAlpha => (
+            {
+                let mut vec = Vec::with_capacity(img_data.len() * 3);
+                for ga in img_data.chunks(2) {
+                    let g = ga[0];
+                    let a = ga[1];
+                    vec.extend([g, g, g, a].iter().cloned())
+                }
+                println!("333333333");
+                vec
+            },
+            ClientFormat::U8U8U8U8,
+        ),
+        _ => unreachable!("uncovered color type"),
+    };
+
+    // let buf=f.bytes();
+    // // let mut buf = vec![0; 8];
+    // // let n = f.read_buf(&mut buf[..]).unwrap();
+    println!("data capacity:{:?},len:{:?} ", data.capacity(),data.len());
+    
+
+}
+
 // 通过前端调用
 #[tauri::command]
 async fn close_splashscreen(window: tauri::Window) {
@@ -205,6 +273,7 @@ fn main() {
             args_command,
             init_process,
             read_every_text_file,
+            read_img_file,
             close_splashscreen
         ])
         .system_tray(menu())

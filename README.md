@@ -31,3 +31,6 @@ Tauri学习
  
 
 ```
+
+## 图片
+- png https://github.com/image-rs/image-png/blob/master/examples/show.rs

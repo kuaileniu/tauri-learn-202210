@@ -31,3 +31,12 @@ Tauri学习
  
 
 ```
+
+# elf 
+``` shell
+cd go-for-elf
+
+chmod +x build.py
+
+python3 ./build.py 
+```

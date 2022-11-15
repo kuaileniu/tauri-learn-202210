@@ -13,3 +13,5 @@ node_modules
 pnpm-lock.yaml
 
 **/*.rs.bk
+
+go-for-elf/bin

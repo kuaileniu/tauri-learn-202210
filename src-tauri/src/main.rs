@@ -10,6 +10,7 @@ use tauri::SystemTray;
 use tauri::SystemTrayEvent;
 use tauri::Window;
 use tauri::{CustomMenuItem, SystemTrayMenu, SystemTrayMenuItem, SystemTraySubmenu};
+use test5::image_encode_base64;
 
 #[derive(Clone, serde::Serialize)]
 struct MyPayload {
@@ -75,6 +76,11 @@ fn run_elf(path: &str) -> String {
         Ok(v) => format!("执行成功 {:?}", v),
         Err(e) => format!("执行程序失败 {:?}", e),
     }
+}
+
+#[tauri::command]
+fn read_img_file(path: &str)-> String {
+    image_encode_base64(path)
 }
 
 // 托盘菜单
@@ -218,7 +224,8 @@ fn main() {
             init_process,
             read_every_text_file,
             close_splashscreen,
-            run_elf
+            run_elf,
+            read_img_file
         ])
         .system_tray(menu())
         .on_system_tray_event(tray_handler)

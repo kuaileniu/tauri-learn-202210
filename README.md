@@ -40,3 +40,6 @@ chmod +x build.py
 
 python3 ./build.py 
 ```
+
+# 安全策略
+- https://tauri.app/v1/api/js/tauri

@@ -13,6 +13,7 @@ import TauriFSEvery from "./components/TauriFSEvery.vue";
 import WindowCustomization from "./components/WindowCustomization.vue";
 import SelectDir from "./components/SelectDir.vue";
 import Multiwindow from "./components/Multiwindow.vue";
+import RunElf from "./components/RunElf.vue";
 
 onMounted(() => {
   // setTimeout(() => {
@@ -69,6 +70,7 @@ onMounted(() => {
       <TauriFSEvery />
       <WindowCustomization />
       <Multiwindow />
+      <RunElf />
     </div>
   </div>
 </template>

@@ -2,12 +2,14 @@
     all(not(debug_assertions), target_os = "windows"),
     windows_subsystem = "windows"
 )]
+use std::process::Command;
 use std::{thread, time};
 use tauri::AppHandle;
 use tauri::Manager;
 use tauri::SystemTray;
 use tauri::SystemTrayEvent;
 use tauri::Window;
+// use tauri::api::process::Command;
 use tauri::{CustomMenuItem, SystemTrayMenu, SystemTrayMenuItem, SystemTraySubmenu};
 
 #[derive(Clone, serde::Serialize)]
@@ -63,6 +65,15 @@ async fn close_splashscreen(window: tauri::Window) {
 
     // Show main window
     window.get_window("main").unwrap().show().unwrap();
+}
+
+#[tauri::command]
+fn run_elf(path: &str) -> String {
+    println!("rust run_elf path ==== {:?}", path);
+    // let path = tauri::api::path::resource_dir().unwrap();
+    let mut local_command=Command::new(path);
+    local_command.output();
+    "ok".to_string()
 }
 
 // 托盘菜单
@@ -205,7 +216,8 @@ fn main() {
             args_command,
             init_process,
             read_every_text_file,
-            close_splashscreen
+            close_splashscreen,
+            run_elf,
         ])
         .system_tray(menu())
         .on_system_tray_event(tray_handler)

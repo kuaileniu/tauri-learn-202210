@@ -18,11 +18,11 @@ Tauri学习
  
  5. cd src-tauri &&  CARGO_NET_GIT_FETCH_WITH_CLI=true cargo run  // 下载cargo中依赖的包，可忽略个别文件编译不通过
 
- 6. cd 项目根目录 pnpm tauri build
- 6.1  若要支持windows7 
-        carog.toml 中添加
-        [dependencies]
-        tauri = { version = "1", features = [ "windows7-compat" ] }
+ 6. cd 项目根目录 pnpm tauri build     // 打包发布模式
+       6.1  若要支持windows7 
+              carog.toml 中添加
+              [dependencies]
+              tauri = { version = "1", features = [ "windows7-compat" ] }
  7.src-tauri/target/release/bundle/      //打包出的安装文件位置
 
  --- 8.  upx --ultra-brute src-tauri/target/release/bundle/macos/test5.app/Contents/macOS/test5           // upx再次压缩,但是压缩后就报 您没有权限来打开应用程序，

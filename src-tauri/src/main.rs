@@ -71,9 +71,12 @@ async fn close_splashscreen(window: tauri::Window) {
 fn run_elf(path: &str) -> String {
     println!("rust run_elf path ==== {:?}", path);
     // let path = tauri::api::path::resource_dir().unwrap();
-    let mut local_command=Command::new(path);
-    local_command.output();
-    "ok".to_string()
+    let mut local_command = Command::new(path);
+    let result = local_command.output();
+    match result {
+        Ok(v) => format!("{:?}", v),
+        Err(e) => format!("执行程序失败 {:?}", e),
+    }
 }
 
 // 托盘菜单

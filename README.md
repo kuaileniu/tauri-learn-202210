@@ -27,7 +27,16 @@ Tauri学习
 
  --- 8.  upx --ultra-brute src-tauri/target/release/bundle/macos/test5.app/Contents/macOS/test5           // upx再次压缩,但是压缩后就报 您没有权限来打开应用程序，
 
- 9. cd 项目根目录 pnpm tauri-dev  // 开发模式启动项目
+ 9. cd 项目根目录 CARGO_NET_GIT_FETCH_WITH_CLI=true  pnpm tauri-dev  // 开发模式启动项目
  
 
+```
+
+# elf 
+``` shell
+cd go-for-elf
+
+chmod +x build.py
+
+python3 ./build.py 
 ```

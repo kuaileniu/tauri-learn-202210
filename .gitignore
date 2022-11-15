@@ -2,8 +2,6 @@
 # will have compiled files and executables
 **/target/
 
-Cargo.lock
-
 .DS_Store
 
 dist
@@ -13,3 +11,5 @@ node_modules
 pnpm-lock.yaml
 
 **/*.rs.bk
+
+go-for-elf/bin

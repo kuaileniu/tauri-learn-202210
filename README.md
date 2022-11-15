@@ -40,3 +40,10 @@ chmod +x build.py
 
 python3 ./build.py 
 ```
+
+# 构建指定系统应用
+pnpm tauri build --target aarch64-apple-darwin
+
+pnpm tauri build --target x86_64-apple-darwin
+
+pnpm tauri build --target universal-apple-darwin

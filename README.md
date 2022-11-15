@@ -43,3 +43,10 @@ python3 ./build.py
 
 # 安全策略
 - https://tauri.app/v1/api/js/tauri
+
+# 构建指定系统应用
+pnpm tauri build --target aarch64-apple-darwin
+
+pnpm tauri build --target x86_64-apple-darwin
+
+pnpm tauri build --target universal-apple-darwin

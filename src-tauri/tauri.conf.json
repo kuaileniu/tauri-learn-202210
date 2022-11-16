@@ -1,6 +1,8 @@
 {
     "build": {
         "beforeBundleCommand": "upx -9 src-tauri/target/release/test5",
+        "beforeDevCommand": "pnpm dev",
+        "beforeBuildCommand": "pnpm build",
         "devPath": "http://localhost:1420",
         "distDir": "../dist",
         "withGlobalTauri": false

@@ -50,3 +50,13 @@ pnpm tauri build --target aarch64-apple-darwin
 pnpm tauri build --target x86_64-apple-darwin
 
 pnpm tauri build --target universal-apple-darwin
+
+# cargo.toml 参数
+opt-level 支持的选项包括:
+
+0: 无优化
+1: 基本优化
+2: 一些优化
+3: 全部优化
+"s": 优化输出的二进制文件的大小
+"z": 优化二进制文件大小，但也会关闭循环向量化

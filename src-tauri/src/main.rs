@@ -84,7 +84,7 @@ fn read_img_file(path: &str)-> String {
 }
 
 // 托盘菜单
-pub fn menu() -> SystemTray {
+pub fn tray_menu() -> SystemTray {
     let quit = CustomMenuItem::new("quit".to_string(), "退出");
     let hide = CustomMenuItem::new("hide".to_string(), "Hide");
     let show = CustomMenuItem::new("show".to_string(), "Show");
@@ -227,7 +227,7 @@ fn main() {
             run_elf,
             read_img_file
         ])
-        .system_tray(menu())
+        .system_tray(tray_menu())
         .on_system_tray_event(tray_handler)
         // .run(tauri::generate_context!())
         // .expect("error while running tauri application")

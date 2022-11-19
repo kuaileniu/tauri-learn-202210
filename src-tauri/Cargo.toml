@@ -35,6 +35,9 @@ default = [ "custom-protocol" ]
 # DO NOT remove this
 custom-protocol = [ "tauri/custom-protocol" ]
 
+[profile.dev]
+split-debuginfo = "unpacked" # faster debug builds on mac
+
 [profile.release]
 incremental = false
 opt-level = 'z' # 0-3

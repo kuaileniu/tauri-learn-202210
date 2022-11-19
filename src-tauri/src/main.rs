@@ -4,11 +4,11 @@
 )]
 use std::process::Command;
 use std::{thread, time};
-use tauri::AppHandle;
 use tauri::Manager;
 use tauri::SystemTray;
 use tauri::SystemTrayEvent;
 use tauri::Window;
+use tauri::{AppHandle, Menu, Submenu,MenuItem};
 use tauri::{CustomMenuItem, SystemTrayMenu, SystemTrayMenuItem, SystemTraySubmenu};
 use test5::image_encode_base64;
 
@@ -79,7 +79,7 @@ fn run_elf(path: &str) -> String {
 }
 
 #[tauri::command]
-fn read_img_file(path: &str)-> String {
+fn read_img_file(path: &str) -> String {
     image_encode_base64(path)
 }
 
@@ -182,6 +182,19 @@ pub fn tray_handler(app: &AppHandle, event: SystemTrayEvent) {
     }
 }
 
+pub fn menu() -> Menu {
+    let file_menu = Submenu::new(
+        "File",
+        Menu::new()
+            .add_native_item(MenuItem::Quit)
+            .add_item(CustomMenuItem::new("open", "Open--001b").accelerator("cmdOrControl+O"))
+            .add_item(CustomMenuItem::new("save", "Save").accelerator("cmdOrControl+S"))
+            .add_item(CustomMenuItem::new("close", "Close").accelerator("cmdOrControl+Q")),
+    );
+    // let edit_menu = Submenu::new("Edit",null);
+    Menu::new().add_submenu(file_menu)
+    // .add_submenu(edit_menu)
+}
 struct Lang<'a> {
     name: &'a str,
     id: &'a str,
@@ -227,6 +240,7 @@ fn main() {
             run_elf,
             read_img_file
         ])
+        .menu(menu())
         .system_tray(tray_menu())
         .on_system_tray_event(tray_handler)
         // .run(tauri::generate_context!())

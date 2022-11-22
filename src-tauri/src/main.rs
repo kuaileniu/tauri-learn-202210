@@ -5,15 +5,18 @@
 use std::process::Command;
 use std::{thread, time};
 use tauri::api::path::parse;
-use tauri::{SystemTray, window};
 use tauri::SystemTrayEvent;
 use tauri::Window;
+use tauri::{window, SystemTray};
 use tauri::{AboutMetadata, Manager, WindowMenuEvent};
 use tauri::{AppHandle, Menu, MenuItem, Submenu};
 use tauri::{CustomMenuItem, SystemTrayMenu, SystemTrayMenuItem, SystemTraySubmenu};
 use test5::image_encode_base64;
 
 const MENU_ID_NEW_WINDOW: &str = "new_window";
+
+const MENU_ID_HIDDEN_NEW_WINDOW: &str = "hidden_new_window";
+const MENU_ID_CLOSE_NEW_WINDOW: &str = "close_new_window";
 
 #[derive(Clone, serde::Serialize)]
 struct MyPayload {
@@ -217,6 +220,8 @@ pub fn menu() -> Menu {
     }
     const menu_id_new_window: &str = "new_window";
     file_menu = file_menu.add_item(CustomMenuItem::new(MENU_ID_NEW_WINDOW, "新建窗口"));
+    file_menu = file_menu.add_item(CustomMenuItem::new(MENU_ID_HIDDEN_NEW_WINDOW, "隐藏窗口"));
+    file_menu = file_menu.add_item(CustomMenuItem::new(MENU_ID_CLOSE_NEW_WINDOW, "关闭窗口"));
     menu = menu.add_submenu(Submenu::new("File", file_menu));
 
     #[cfg(not(target_os = "linux"))]
@@ -268,9 +273,38 @@ pub fn menu_event(event: WindowMenuEvent) {
     println!("menu_id: {:?}", menu_id);
     match event.menu_item_id() {
         MENU_ID_NEW_WINDOW => {
-            println!("通过tauri api 弹出一个窗口");
-            //let baidu_window = tauri::WindowBuilder::new(event.window(), "❤️新建的窗口1", tauri::WindowUrl::App("index.html".into()))
-            let baidu_window = tauri::WindowBuilder::new(event.window(), "❤️新建的窗口1", tauri::WindowUrl::External("https://www.baidu.com".parse().unwrap())).build();
+            if let Some(baidu_window) = event.window().get_window("baidu_window") {
+                baidu_window.show().unwrap();
+                println!("重新显示已有窗口");
+            } else {
+                let baidu_window = tauri::WindowBuilder::new(
+                    event.window(),
+                    "baidu_window",
+                    // tauri::WindowUrl::External("https://www.baidu.com/".parse().unwrap()),
+                    tauri::WindowUrl::App("page/new_window.html".into()),
+                );
+                baidu_window
+                    .center()
+                    .decorations(true)
+                    .inner_size(800.0, 400.0)
+                    .build()
+                    .unwrap();
+                println!("新建窗口");
+            }
+        }
+        MENU_ID_CLOSE_NEW_WINDOW => {
+            if let Some(splashscreen) = event.window().get_window("baidu_window") {
+                splashscreen.close().unwrap();
+            } else {
+                println!("未能成功关闭窗口");
+            }
+        }
+        MENU_ID_HIDDEN_NEW_WINDOW => {
+            if let Some(splashscreen) = event.window().get_window("baidu_window") {
+                splashscreen.hide().unwrap();
+            } else {
+                println!("未能成功隐藏窗口");
+            }
         }
         _ => {}
     }
@@ -300,6 +334,12 @@ impl Lang<'static> {
 fn main() {
     tauri::Builder::default()
         .setup(|app| {
+            // let docs_window = tauri::WindowBuilder::new(
+            //     app,
+            //     "external", /* the unique window label */
+            //     tauri::WindowUrl::External("https://tauri.app/".parse().unwrap())
+            //   ).build()?;
+
             // 后端单方（无需前端发起调用) 关闭开屏界面
             let splashscreen_window = app.get_window("my_splashscreen").unwrap();
             let main_window = app.get_window("main").unwrap();

@@ -4,13 +4,19 @@
 )]
 use std::process::Command;
 use std::{thread, time};
-use tauri::AppHandle;
-use tauri::Manager;
-use tauri::SystemTray;
+use tauri::api::path::parse;
 use tauri::SystemTrayEvent;
 use tauri::Window;
+use tauri::{window, SystemTray};
+use tauri::{AboutMetadata, Manager, WindowMenuEvent};
+use tauri::{AppHandle, Menu, MenuItem, Submenu};
 use tauri::{CustomMenuItem, SystemTrayMenu, SystemTrayMenuItem, SystemTraySubmenu};
 use test5::image_encode_base64;
+
+const MENU_ID_NEW_WINDOW: &str = "new_window";
+
+const MENU_ID_HIDDEN_NEW_WINDOW: &str = "hidden_new_window";
+const MENU_ID_CLOSE_NEW_WINDOW: &str = "close_new_window";
 
 #[derive(Clone, serde::Serialize)]
 struct MyPayload {
@@ -44,7 +50,7 @@ fn init_process(window: Window) {
                 },
             )
             .unwrap();
-        thread::sleep(time::Duration::from_secs(2));
+        thread::sleep(time::Duration::from_secs(1));
     });
 }
 
@@ -52,6 +58,7 @@ fn init_process(window: Window) {
 fn read_every_text_file(path: std::path::PathBuf) -> String {
     std::fs::read_to_string(path).unwrap()
 }
+
 // 通过前端调用
 #[tauri::command]
 async fn close_splashscreen(window: tauri::Window) {
@@ -79,7 +86,7 @@ fn run_elf(path: &str) -> String {
 }
 
 #[tauri::command]
-fn read_img_file(path: &str)-> String {
+fn read_img_file(path: &str) -> String {
     image_encode_base64(path)
 }
 
@@ -182,6 +189,127 @@ pub fn tray_handler(app: &AppHandle, event: SystemTrayEvent) {
     }
 }
 
+pub fn menu() -> Menu {
+    let app_name = "test5";
+    let mut menu = Menu::new();
+    #[cfg(target_os = "macos")]
+    {
+        menu = menu.add_submenu(Submenu::new(
+            app_name,
+            Menu::new()
+                .add_native_item(MenuItem::About(
+                    app_name.to_string(),
+                    AboutMetadata::default(),
+                ))
+                .add_native_item(MenuItem::Separator)
+                .add_native_item(MenuItem::Services)
+                .add_native_item(MenuItem::Separator)
+                .add_native_item(MenuItem::Hide)
+                .add_native_item(MenuItem::HideOthers)
+                .add_native_item(MenuItem::ShowAll)
+                .add_native_item(MenuItem::Separator)
+                .add_native_item(MenuItem::Quit),
+        ));
+    }
+
+    let mut file_menu = Menu::new();
+    file_menu = file_menu.add_native_item(MenuItem::CloseWindow);
+    #[cfg(not(target_os = "macos"))]
+    {
+        file_menu = file_menu.add_native_item(MenuItem::Quit);
+    }
+    const menu_id_new_window: &str = "new_window";
+    file_menu = file_menu.add_item(CustomMenuItem::new(MENU_ID_NEW_WINDOW, "新建窗口"));
+    file_menu = file_menu.add_item(CustomMenuItem::new(MENU_ID_HIDDEN_NEW_WINDOW, "隐藏窗口"));
+    file_menu = file_menu.add_item(CustomMenuItem::new(MENU_ID_CLOSE_NEW_WINDOW, "关闭窗口"));
+    menu = menu.add_submenu(Submenu::new("File", file_menu));
+
+    #[cfg(not(target_os = "linux"))]
+    let mut edit_menu = Menu::new();
+    #[cfg(target_os = "macos")]
+    {
+        edit_menu = edit_menu.add_native_item(MenuItem::Undo);
+        edit_menu = edit_menu.add_native_item(MenuItem::Redo);
+        edit_menu = edit_menu.add_native_item(MenuItem::Separator);
+    }
+    #[cfg(not(target_os = "linux"))]
+    {
+        edit_menu = edit_menu.add_native_item(MenuItem::Cut);
+        edit_menu = edit_menu.add_native_item(MenuItem::Copy);
+        edit_menu = edit_menu.add_native_item(MenuItem::Paste);
+    }
+    #[cfg(target_os = "macos")]
+    {
+        edit_menu = edit_menu.add_native_item(MenuItem::SelectAll);
+    }
+    #[cfg(not(target_os = "linux"))]
+    {
+        menu = menu.add_submenu(Submenu::new("Edit", edit_menu));
+    }
+    #[cfg(target_os = "macos")]
+    {
+        menu = menu.add_submenu(Submenu::new(
+            "View",
+            Menu::new().add_native_item(MenuItem::EnterFullScreen),
+        ));
+    }
+
+    let mut window_menu = Menu::new();
+    window_menu = window_menu.add_native_item(MenuItem::Minimize);
+    #[cfg(target_os = "macos")]
+    {
+        window_menu = window_menu.add_native_item(MenuItem::Zoom);
+        window_menu = window_menu.add_native_item(MenuItem::Separator);
+    }
+    window_menu = window_menu.add_native_item(MenuItem::CloseWindow);
+    menu = menu.add_submenu(Submenu::new("Window", window_menu));
+
+    menu
+}
+
+pub fn menu_event(event: WindowMenuEvent) {
+    println!("menu_event-------");
+    let menu_id = event.menu_item_id();
+    println!("menu_id: {:?}", menu_id);
+    match event.menu_item_id() {
+        MENU_ID_NEW_WINDOW => {
+            if let Some(baidu_window) = event.window().get_window("baidu_window") {
+                baidu_window.show().unwrap();
+                println!("重新显示已有窗口");
+            } else {
+                let baidu_window = tauri::WindowBuilder::new(
+                    event.window(),
+                    "baidu_window",
+                    // tauri::WindowUrl::External("https://www.baidu.com/".parse().unwrap()),
+                    tauri::WindowUrl::App("page/new_window.html".into()),
+                );
+                baidu_window
+                    .center()
+                    .decorations(true)
+                    .inner_size(800.0, 400.0)
+                    .build()
+                    .unwrap();
+                println!("新建窗口");
+            }
+        }
+        MENU_ID_CLOSE_NEW_WINDOW => {
+            if let Some(splashscreen) = event.window().get_window("baidu_window") {
+                splashscreen.close().unwrap();
+            } else {
+                println!("未能成功关闭窗口");
+            }
+        }
+        MENU_ID_HIDDEN_NEW_WINDOW => {
+            if let Some(splashscreen) = event.window().get_window("baidu_window") {
+                splashscreen.hide().unwrap();
+            } else {
+                println!("未能成功隐藏窗口");
+            }
+        }
+        _ => {}
+    }
+}
+
 struct Lang<'a> {
     name: &'a str,
     id: &'a str,
@@ -206,6 +334,12 @@ impl Lang<'static> {
 fn main() {
     tauri::Builder::default()
         .setup(|app| {
+            // let docs_window = tauri::WindowBuilder::new(
+            //     app,
+            //     "external", /* the unique window label */
+            //     tauri::WindowUrl::External("https://tauri.app/".parse().unwrap())
+            //   ).build()?;
+
             // 后端单方（无需前端发起调用) 关闭开屏界面
             let splashscreen_window = app.get_window("my_splashscreen").unwrap();
             let main_window = app.get_window("main").unwrap();
@@ -227,6 +361,8 @@ fn main() {
             run_elf,
             read_img_file
         ])
+        .menu(menu())
+        .on_menu_event(menu_event)
         .system_tray(tray_menu())
         .on_system_tray_event(tray_handler)
         // .run(tauri::generate_context!())

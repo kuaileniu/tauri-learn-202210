@@ -4,13 +4,16 @@
 )]
 use std::process::Command;
 use std::{thread, time};
-use tauri::Manager;
-use tauri::SystemTray;
+use tauri::api::path::parse;
+use tauri::{SystemTray, window};
 use tauri::SystemTrayEvent;
 use tauri::Window;
-use tauri::{AppHandle, Menu, Submenu,MenuItem};
+use tauri::{AboutMetadata, Manager, WindowMenuEvent};
+use tauri::{AppHandle, Menu, MenuItem, Submenu};
 use tauri::{CustomMenuItem, SystemTrayMenu, SystemTrayMenuItem, SystemTraySubmenu};
 use test5::image_encode_base64;
+
+const MENU_ID_NEW_WINDOW: &str = "new_window";
 
 #[derive(Clone, serde::Serialize)]
 struct MyPayload {
@@ -44,7 +47,7 @@ fn init_process(window: Window) {
                 },
             )
             .unwrap();
-        thread::sleep(time::Duration::from_secs(2));
+        thread::sleep(time::Duration::from_secs(1));
     });
 }
 
@@ -52,6 +55,7 @@ fn init_process(window: Window) {
 fn read_every_text_file(path: std::path::PathBuf) -> String {
     std::fs::read_to_string(path).unwrap()
 }
+
 // 通过前端调用
 #[tauri::command]
 async fn close_splashscreen(window: tauri::Window) {
@@ -183,18 +187,95 @@ pub fn tray_handler(app: &AppHandle, event: SystemTrayEvent) {
 }
 
 pub fn menu() -> Menu {
-    let file_menu = Submenu::new(
-        "File",
-        Menu::new()
-            .add_native_item(MenuItem::Quit)
-            .add_item(CustomMenuItem::new("open", "Open--001b").accelerator("cmdOrControl+O"))
-            .add_item(CustomMenuItem::new("save", "Save").accelerator("cmdOrControl+S"))
-            .add_item(CustomMenuItem::new("close", "Close").accelerator("cmdOrControl+Q")),
-    );
-    // let edit_menu = Submenu::new("Edit",null);
-    Menu::new().add_submenu(file_menu)
-    // .add_submenu(edit_menu)
+    let app_name = "test5";
+    let mut menu = Menu::new();
+    #[cfg(target_os = "macos")]
+    {
+        menu = menu.add_submenu(Submenu::new(
+            app_name,
+            Menu::new()
+                .add_native_item(MenuItem::About(
+                    app_name.to_string(),
+                    AboutMetadata::default(),
+                ))
+                .add_native_item(MenuItem::Separator)
+                .add_native_item(MenuItem::Services)
+                .add_native_item(MenuItem::Separator)
+                .add_native_item(MenuItem::Hide)
+                .add_native_item(MenuItem::HideOthers)
+                .add_native_item(MenuItem::ShowAll)
+                .add_native_item(MenuItem::Separator)
+                .add_native_item(MenuItem::Quit),
+        ));
+    }
+
+    let mut file_menu = Menu::new();
+    file_menu = file_menu.add_native_item(MenuItem::CloseWindow);
+    #[cfg(not(target_os = "macos"))]
+    {
+        file_menu = file_menu.add_native_item(MenuItem::Quit);
+    }
+    const menu_id_new_window: &str = "new_window";
+    file_menu = file_menu.add_item(CustomMenuItem::new(MENU_ID_NEW_WINDOW, "新建窗口"));
+    menu = menu.add_submenu(Submenu::new("File", file_menu));
+
+    #[cfg(not(target_os = "linux"))]
+    let mut edit_menu = Menu::new();
+    #[cfg(target_os = "macos")]
+    {
+        edit_menu = edit_menu.add_native_item(MenuItem::Undo);
+        edit_menu = edit_menu.add_native_item(MenuItem::Redo);
+        edit_menu = edit_menu.add_native_item(MenuItem::Separator);
+    }
+    #[cfg(not(target_os = "linux"))]
+    {
+        edit_menu = edit_menu.add_native_item(MenuItem::Cut);
+        edit_menu = edit_menu.add_native_item(MenuItem::Copy);
+        edit_menu = edit_menu.add_native_item(MenuItem::Paste);
+    }
+    #[cfg(target_os = "macos")]
+    {
+        edit_menu = edit_menu.add_native_item(MenuItem::SelectAll);
+    }
+    #[cfg(not(target_os = "linux"))]
+    {
+        menu = menu.add_submenu(Submenu::new("Edit", edit_menu));
+    }
+    #[cfg(target_os = "macos")]
+    {
+        menu = menu.add_submenu(Submenu::new(
+            "View",
+            Menu::new().add_native_item(MenuItem::EnterFullScreen),
+        ));
+    }
+
+    let mut window_menu = Menu::new();
+    window_menu = window_menu.add_native_item(MenuItem::Minimize);
+    #[cfg(target_os = "macos")]
+    {
+        window_menu = window_menu.add_native_item(MenuItem::Zoom);
+        window_menu = window_menu.add_native_item(MenuItem::Separator);
+    }
+    window_menu = window_menu.add_native_item(MenuItem::CloseWindow);
+    menu = menu.add_submenu(Submenu::new("Window", window_menu));
+
+    menu
 }
+
+pub fn menu_event(event: WindowMenuEvent) {
+    println!("menu_event-------");
+    let menu_id = event.menu_item_id();
+    println!("menu_id: {:?}", menu_id);
+    match event.menu_item_id() {
+        MENU_ID_NEW_WINDOW => {
+            println!("通过tauri api 弹出一个窗口");
+            //let baidu_window = tauri::WindowBuilder::new(event.window(), "❤️新建的窗口1", tauri::WindowUrl::App("index.html".into()))
+            let baidu_window = tauri::WindowBuilder::new(event.window(), "❤️新建的窗口1", tauri::WindowUrl::External("https://www.baidu.com".parse().unwrap())).build();
+        }
+        _ => {}
+    }
+}
+
 struct Lang<'a> {
     name: &'a str,
     id: &'a str,
@@ -241,6 +322,7 @@ fn main() {
             read_img_file
         ])
         .menu(menu())
+        .on_menu_event(menu_event)
         .system_tray(tray_menu())
         .on_system_tray_event(tray_handler)
         // .run(tauri::generate_context!())

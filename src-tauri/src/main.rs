@@ -219,9 +219,15 @@ pub fn menu() -> Menu {
         file_menu = file_menu.add_native_item(MenuItem::Quit);
     }
     const menu_id_new_window: &str = "new_window";
-    file_menu = file_menu.add_item(CustomMenuItem::new(MENU_ID_NEW_WINDOW, "新建窗口"));
-    file_menu = file_menu.add_item(CustomMenuItem::new(MENU_ID_HIDDEN_NEW_WINDOW, "隐藏窗口"));
-    file_menu = file_menu.add_item(CustomMenuItem::new(MENU_ID_CLOSE_NEW_WINDOW, "关闭窗口"));
+    file_menu = file_menu.add_item(CustomMenuItem::new(MENU_ID_NEW_WINDOW, "新建模态窗口"));
+    file_menu = file_menu.add_item(CustomMenuItem::new(
+        MENU_ID_HIDDEN_NEW_WINDOW,
+        "隐藏模态窗口",
+    ));
+    file_menu = file_menu.add_item(CustomMenuItem::new(
+        MENU_ID_CLOSE_NEW_WINDOW,
+        "关闭模态窗口",
+    ));
     menu = menu.add_submenu(Submenu::new("File", file_menu));
 
     #[cfg(not(target_os = "linux"))]
@@ -285,27 +291,44 @@ pub fn menu_event(event: WindowMenuEvent) {
                 );
                 baidu_window
                     .center()
-                    .decorations(true)
+                    // .always_on_top(true)
+                    .decorations(false)
                     .inner_size(800.0, 400.0)
                     .build()
                     .unwrap();
                 println!("新建窗口");
             }
+            event
+                .window()
+                .get_window("main")
+                .unwrap()
+                .set_ignore_cursor_events(true); //set_ignore_cursor_events 的开关可做出模态窗口效果 //.open_devtools();//open_devtools不存在于发布版本的api中
         }
+
         MENU_ID_CLOSE_NEW_WINDOW => {
-            if let Some(splashscreen) = event.window().get_window("baidu_window") {
-                splashscreen.close().unwrap();
+            if let Some(main_window) = event.window().get_window("main") {
+                main_window.set_ignore_cursor_events(false); //set_ignore_cursor_events 的开关可做出模态窗口效果
+            }
+            if let Some(baidu_window) = event.window().get_window("baidu_window") {
+                baidu_window.close().unwrap();
+                println!("成功关闭窗口");
             } else {
                 println!("未能成功关闭窗口");
             }
         }
+
         MENU_ID_HIDDEN_NEW_WINDOW => {
-            if let Some(splashscreen) = event.window().get_window("baidu_window") {
-                splashscreen.hide().unwrap();
+            if let Some(main_window) = event.window().get_window("main") {
+                main_window.set_ignore_cursor_events(false);
+            }
+            if let Some(baidu_window) = event.window().get_window("baidu_window") {
+                baidu_window.hide().unwrap();
+                println!("成功隐藏窗口");
             } else {
                 println!("未能成功隐藏窗口");
             }
         }
+
         _ => {}
     }
 }

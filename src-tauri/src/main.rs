@@ -12,7 +12,7 @@ use tauri::{SystemTray, Window};
 use test5::image_encode_base64;
 
 const MENU_ID_NEW_WINDOW: &str = "new_window";
-
+const MENU_ID_CHANGE_MENU_TITLE: &str = "change_menu_item";
 const MENU_ID_HIDDEN_NEW_WINDOW: &str = "hidden_new_window";
 const MENU_ID_CLOSE_NEW_WINDOW: &str = "close_new_window";
 
@@ -268,6 +268,9 @@ pub fn menu() -> Menu {
     window_menu = window_menu.add_native_item(MenuItem::CloseWindow);
     menu = menu.add_submenu(Submenu::new("Window", window_menu));
 
+    let mut dynamic_menu = Menu::new();
+    dynamic_menu = dynamic_menu.add_item(CustomMenuItem::new(MENU_ID_CHANGE_MENU_TITLE, "可改成英文名"));
+    menu = menu.add_submenu(Submenu::new("动态功能", dynamic_menu));
     menu
 }
 
@@ -325,6 +328,10 @@ pub fn menu_event(event: WindowMenuEvent) {
             } else {
                 println!("未能成功隐藏窗口");
             }
+        }
+        
+        MENU_ID_CHANGE_MENU_TITLE =>{
+            event.window().menu_handle().get_item(MENU_ID_CHANGE_MENU_TITLE).set_title("from chinese").unwrap();
         }
 
         _ => {}

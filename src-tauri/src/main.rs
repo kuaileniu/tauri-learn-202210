@@ -269,7 +269,10 @@ pub fn menu() -> Menu {
     menu = menu.add_submenu(Submenu::new("Window", window_menu));
 
     let mut dynamic_menu = Menu::new();
-    dynamic_menu = dynamic_menu.add_item(CustomMenuItem::new(MENU_ID_CHANGE_MENU_TITLE, "可改成英文名"));
+    dynamic_menu = dynamic_menu.add_item(CustomMenuItem::new(
+        MENU_ID_CHANGE_MENU_TITLE,
+        "非main窗口可改成英文名",
+    ));
     menu = menu.add_submenu(Submenu::new("动态功能", dynamic_menu));
     menu
 }
@@ -329,9 +332,14 @@ pub fn menu_event(event: WindowMenuEvent) {
                 println!("未能成功隐藏窗口");
             }
         }
-        
-        MENU_ID_CHANGE_MENU_TITLE =>{
-            event.window().menu_handle().get_item(MENU_ID_CHANGE_MENU_TITLE).set_title("from chinese").unwrap();
+
+        MENU_ID_CHANGE_MENU_TITLE => {
+            event
+                .window()
+                .menu_handle()
+                .get_item(MENU_ID_CHANGE_MENU_TITLE)
+                .set_title("from chinese")
+                .unwrap();
         }
 
         _ => {}

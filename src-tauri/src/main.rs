@@ -4,13 +4,11 @@
 )]
 use std::process::Command;
 use std::{thread, time};
-use tauri::api::path::parse;
 use tauri::SystemTrayEvent;
-use tauri::Window;
-use tauri::{window, SystemTray};
 use tauri::{AboutMetadata, Manager, WindowMenuEvent};
 use tauri::{AppHandle, Menu, MenuItem, Submenu};
 use tauri::{CustomMenuItem, SystemTrayMenu, SystemTrayMenuItem, SystemTraySubmenu};
+use tauri::{SystemTray, Window};
 use test5::image_encode_base64;
 
 const MENU_ID_NEW_WINDOW: &str = "new_window";
@@ -218,7 +216,7 @@ pub fn menu() -> Menu {
     {
         file_menu = file_menu.add_native_item(MenuItem::Quit);
     }
-    const menu_id_new_window: &str = "new_window";
+
     file_menu = file_menu.add_item(CustomMenuItem::new(MENU_ID_NEW_WINDOW, "新建模态窗口"));
     file_menu = file_menu.add_item(CustomMenuItem::new(
         MENU_ID_HIDDEN_NEW_WINDOW,

@@ -12,7 +12,9 @@ rust-version = "1.57"
 
 [build-dependencies]
 tauri-build = { version = "1.1", features = [] }
-
+[patch.crates-io]
+# 使用本地依赖
+# egui = { path = "../egui/egui" }
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }

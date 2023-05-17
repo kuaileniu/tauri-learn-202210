@@ -7,7 +7,7 @@ pnpm 7.28.0
 - tauri.conf.json 中的 tauri.windows.x 与 tauri.windows.y 须成对出现方可生效
 
 # 创建工程
-
+- npm instal pnpm -g
 - pnpm create tauri-app // 安装  tauri-app
 ```
  1.输入项目名称 test5

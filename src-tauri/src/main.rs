@@ -62,7 +62,7 @@ fn read_every_text_file(path: std::path::PathBuf) -> String {
 async fn close_splashscreen(window: tauri::Window) {
     println!("front.start.Mock.Initializing...");
     std::thread::sleep(std::time::Duration::from_secs(7));
-    println!("front.start.Mock.Done initializing.");
+     
     // Close splashscreen
     if let Some(splashscreen) = window.get_window("my_splashscreen") {
         splashscreen.close().unwrap();

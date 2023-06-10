@@ -1,4 +1,4 @@
-# tauri-learn-202210
+# tarui windows
 Tauri学习
 rustc 1.67.1 (d5a82bbd2 2023-02-07)
 node v16.19.1
